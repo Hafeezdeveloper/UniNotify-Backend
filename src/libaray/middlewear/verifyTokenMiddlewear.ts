@@ -18,7 +18,6 @@ export class AuthMiddleware implements NestMiddleware {
     if (bearer !== 'Bearer' || !token) {
       throw new UnauthorizedException('Invalid token format');
     }
-
     try {
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
 
