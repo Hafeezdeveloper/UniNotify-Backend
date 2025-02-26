@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+  /* * {
+      margin: 0px;
+      padding: 0px;
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+    } */
+
+  a {
+    cursor: pointer;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  @media print {}
+</style>
+
+<body>
+  <div style="padding: 1rem">
+    <div style="
+          background-color: white;
+
+
+          border-radius: 25px;
+          box-shadow: -1px 1px 20px 2px #00000029;
+        ">
+      <div style="padding: 2rem">
+        <div class="first-detailhandler" style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 2rem;
+            ">
+          <div class="invoice-first-left">
+            <img style="width: 60%"
+              src="https://ndisync-images.s3.ap-southeast-2.amazonaws.com/feed-66c42cbc960d3a1c91f83dd3.png"
+              alt="ndisync.ai-Logo" />
+            <p style="
+                  color: #2a2a2a;
+                  font-size: 14px;
+                  font-family: Poppins;
+                  font-weight: 500;
+                  margin: 5px 0;
+                ">
+              ndisync.ai
+            </p>
+            <p style="
+                  color: #2a2a2a;
+                  font-size: 14px;
+                  font-family: Poppins;
+                  font-weight: 400;
+                  margin: 0 0 5px;
+                  width: 260px;
+                ">
+              lorem ipsum
+            </p>
+
+            <div class="" style="display: flex; gap: 5px; margin-top: 5px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins">ABN
+              </span>
+              <span style="
+                    text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 400;
+                    color: #515151;
+                    font-family: Poppins;
+                  ">
+                **********
+              </span>
+            </div>
+            <div style="border-bottom: 1px solid #bbbbbb; margin: 10px 0"></div>
+            <h2 style="
+                  font-size: 16px;
+                  font-weight: 600;
+                  font-family: Poppins;
+                  color: #515151;
+                  margin: 10px 0;
+                ">
+              Billed to
+            </h2>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                    margin: 5px 0;
+                  ">{{firstName}} {{lastName}}</span>
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins"> <span
+                  style="color: #515151; font-size: 14px; font-family: Poppins">{{suburb}}, {{state}},
+                  {{postcode}}</span></span>
+
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins"> {{email}}</span>
+
+            </div>
+          </div>
+          <div class="invoice-first-right">
+            <h2 style="
+                  font-size: 40px;
+                  font-weight: 500;
+                  font-family: Poppins;
+                  color: #212121;
+                  margin: 0;
+                ">
+              INVOICE
+            </h2>
+
+            <div style="display: flex; flex-direction: row; gap: 5px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins">Invoice #</span>
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                  ">
+                {{invoiceNumber}}
+              </span>
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins">Invoice Date</span>
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                  ">
+                {{invoiceDate}}
+              </span>
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins">Invoice Amount</span>
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                  ">AU$ {{amount}}</span>
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins">Customer ID</span>
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                  ">{{userId}}</span>
+            </div>
+            <h3 style="
+                  font-size: 30px;
+                  font-family: Poppins;
+                  font-weight: 600;
+                  color: #6ead26;
+                  margin: 10px 0 0 0;
+                ">
+              Paid
+            </h3>
+
+            <div style="border-bottom: 1px solid #bbbbbb; margin: 10px 0"></div>
+            <h2 style="
+                  font-size: 16px;
+                  font-weight: 600;
+                  font-family: Poppins;
+                  color: #515151;
+                  margin: 10px 0;
+                ">
+              ndisync.ai
+            </h2>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                    margin: 5px 0;
+                  ">ID</span>
+              <p style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                    margin: 5px 0;
+                  ">
+                {{offerId}}
+              </p>
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins">Package</span>
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                  ">{{title}} package</span>
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <span style="color: #515151; font-size: 14px; font-family: Poppins"> Billing Date</span>
+              <span style="
+                    color: #2a2a2a;
+                    font-size: 14px;
+                    font-family: Poppins;
+                    font-weight: 500;
+                  ">{{invoiceDate}}</span>
+            </div>
+
+          </div>
+
+        </div>
+        <!-- Table for product details -->
+        <div class="second-table" style="padding-top: 1rem; padding-bottom: 1rem">
+          <table class="table-details-2 table-border-br table-border-l" style="
+      
+                width: 98%;
+
+              ">
+            <tr>
+              <td class="first-row" style="
+                    font-size: 1em;
+                    background-color: #004540;
+                    color: #ffff;
+                    text-align: center;
+                    border-bottom: 0.1px solid #b9b9b9;
+                    border-right: 0.1px solid #b9b9b9;
+                    border-bottom-left-radius: 4px;
+                    border-top-left-radius: 4px;
+                    padding: 13px 2px;
+                  ">
+                Package
+              </td>
+              <td class="second-row" style="
+                    font-size: 1em;
+                    color: #ffff;
+                    text-align: center;
+                    background-color: #004540;
+                    border-bottom: 0.1px solid #b9b9b9;
+                    border-right: 0.1px solid #b9b9b9;
+                  ">
+                Price
+              </td>
+              <td class="third-row" style="
+                    font-size: 1em;
+                    color: #ffff;
+                    text-align: center;
+                    background-color: #004540;
+                    border-bottom: 0.1px solid #b9b9b9;
+                    border-right: 0.1px solid #b9b9b9;
+                  ">
+                Tax
+              </td>
+              <td class="forth-row" style="
+                    font-size: 1em;
+                    color: #ffff;
+                    text-align: center;
+                    border-top-right-radius: 4px;
+                    border-bottom-right-radius: 4px;
+                    background-color: #004540;
+                    border-bottom: 0.1px solid #b9b9b9;
+                  ">
+                Amount
+              </td>
+            </tr>
+
+
+            <tr>
+              <td class="first-row" style="
+              font-size: 1em;
+              background-color: #fffcf1;
+              color: black;
+              text-align: center;
+              border-bottom: 0.1px solid #b9b9b9;
+              border-right: 0.1px solid #b9b9b9;
+              border-bottom-left-radius: 4px;
+              border-top-left-radius: 4px;
+            ">
+                ndisync.ai {{title}} package
+              </td>
+              <td class="second-row" style="
+              font-size: 1em;
+              color: black;
+              text-align: center;
+              background-color: #fffcf1;
+              border-bottom: 0.1px solid #b9b9b9;
+              border-right: 0.1px solid #b9b9b9;
+            ">
+                AU$ {{amount}}
+              </td>
+              <td class="third-row" style="
+              font-size: 1em;
+              color: black;
+              text-align: center;
+              background-color: #fffcf1;
+              border-bottom: 0.1px solid #b9b9b9;
+              border-right: 0.1px solid #b9b9b9;
+            ">
+                AU$ 0
+              </td>
+              <td class="forth-row" style="
+              font-size: 1em;
+              color: black;
+              text-align: center;
+              border-top-right-radius: 4px;
+              border-bottom-right-radius: 4px;
+              background-color: #fffcf1;
+              border-bottom: 0.1px solid #b9b9b9;
+              padding: 13px 2px;
+            ">
+                AU$ {{amount}}
+              </td>
+            </tr>
+
+          </table>
+        </div>
+        <div class="" style="width: 98%; margin: 0 auto;">
+
+          <div style="display: flex; flex-direction: row; gap: 30px; justify-content:end;">
+            <span style="color: #515151; font-size: 14px; font-family: Poppins">Sub total</span>
+            <span style="
+                color: #2a2a2a;
+                font-size: 14px;
+                font-family: Poppins;
+                font-weight: 500;
+              ">AU$ {{amount}}</span>
+          </div>
+          <div style="display: flex; flex-direction: row; gap: 30px; justify-content:end;">
+            <span style="color: #515151; font-size: 14px; font-family: Poppins">(Tax rate )</span>
+            <span style="
+                color: #2a2a2a;
+                font-size: 14px;
+                font-family: Poppins;
+                font-weight: 500;
+              ">AU$ 0</span>
+          </div>
+          <div style="border-bottom: 1px solid #bbbbbb; margin: 10px 0; width: 30%;     margin-left: auto;"></div>
+          <div style="display: flex; flex-direction: row; gap: 30px; justify-content:end;">
+            <span style="
+            color: #2a2a2a;
+            font-size: 14px;
+            font-family: Poppins;
+            font-weight: 500;
+          ">total</span>
+            <span style="
+                color: #2a2a2a;
+                font-size: 14px;
+                font-family: Poppins;
+                font-weight: 500;
+              ">AU$ {{amount}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

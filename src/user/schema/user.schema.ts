@@ -1,13 +1,13 @@
-import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {HydratedDocument, Types} from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { genderEnum, roleEnum, UserStatusEnum } from 'src/libaray/constants/app.constants';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class User {
-  @Prop({required: true})
+  @Prop({})
   firstName: string;
 
   @Prop()
@@ -16,38 +16,41 @@ export class User {
   @Prop({})
   fullName: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   email: string;
 
-  @Prop({required: true, select: false})
+  @Prop({ required: true, })
   password: string;
 
-  @Prop({required: true, enum: roleEnum})
+  @Prop({ enum: roleEnum })
   role: string;
 
-  @Prop({required: true, enum: UserStatusEnum, default: UserStatusEnum.UN_VERIFIRED})
+  @Prop({  default: UserStatusEnum.PENDING })
   status: string;
 
-  @Prop({required: true, default: false})
+  @Prop({ required: true, default: false })
   isVerified: boolean;
 
-  @Prop({ default: false})
+  @Prop({ default: false })
   statusOnline: boolean;
 
 
   @Prop()
   dateofbirth: Date;
 
-  @Prop({enum: genderEnum})
+  @Prop({ enum: genderEnum })
   gender: string;
 
+  @Prop({})
+  firebasetoken: string;
 
 
-//   @Prop({default: DEFAULT_PROFILE_IMAGE_PATH})
-//   profileImageUrl: string;
 
-//   @Prop({default: DEFAULT_COVER_IMAGE_PATH})
-//   coverImageUrl: string;
+  //   @Prop({default: DEFAULT_PROFILE_IMAGE_PATH})
+  //   profileImageUrl: string;
+
+  //   @Prop({default: DEFAULT_COVER_IMAGE_PATH})
+  //   coverImageUrl: string;
 
 }
 
