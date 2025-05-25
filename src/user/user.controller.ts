@@ -1,6 +1,6 @@
-import { Body, ConflictException, Controller, Get, NotFoundException, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, NotFoundException, Param, Post, Put, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { EmailDto, LoginDto, RegisterUserDto, VerifyOtpDto } from './dto/create-user.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PROFILE_PREFIX } from 'src/libaray/constants/app.constants';
@@ -10,11 +10,13 @@ import { createApiResponse } from 'src/libaray/helpers/utility.helpers';
 import { Response } from 'express';
 import { LINK, RESET, USER_NOT_FOUND } from 'src/lib/constants/app.constants';
 import { OtpService } from 'src/otp/otp.service';
+import { AcademicService } from './academic.service';
+import { UpdateUserStatusDto } from './dto/update-status.dto';
 
 @Controller('user')
 export class UserController {
-    
-    constructor(private readonly userService: UserService,private readonly otpService: OtpService,) { }
+
+    constructor(private readonly userService: UserService, private readonly otpService: OtpService, private readonly academicService: AcademicService) { }
 
     @Post('createUser')
     @UseInterceptors(
@@ -109,32 +111,118 @@ export class UserController {
         return await this.userService.resendOtp(email, LINK);
     }
 
-      @Post('/send-otp')
-      @ApiOperation({summary: 'send Password reset otp'})
-      @ApiBody({type: EmailDto})
-      @createApiResponse(201, 'success', true)
-      @createApiResponse(404, 'email not found', false, {error: 'not found'})
-      async sendOtp(@Body() emailDto: EmailDto) {
-        const {email} = emailDto;
+    @Post('/send-otp')
+    @ApiOperation({ summary: 'send Password reset otp' })
+    @ApiBody({ type: EmailDto })
+    @createApiResponse(201, 'success', true)
+    @createApiResponse(404, 'email not found', false, { error: 'not found' })
+    async sendOtp(@Body() emailDto: EmailDto) {
+        const { email } = emailDto;
         const emailCheck = await this.userService.findOneEmail(email);
         if (!emailCheck) {
-          throw new NotFoundException('email not found');
+            throw new NotFoundException('email not found');
         }
         return await this.userService.resendOtp(email, RESET);
-      }
+    }
 
-      @Post('/verify-otp')
-      @ApiOperation({summary: 'Verify reset password OTP '})
-      @ApiBody({type: VerifyOtpDto})
-      @createApiResponse(201, 'otp verified', true, {})
-      @createApiResponse(400, 'invalid otp', false)
-      @createApiResponse(404, USER_NOT_FOUND, false, {error: 'not found'})
-      async verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
+    @Post('/verify-otp')
+    @ApiOperation({ summary: 'Verify reset password OTP ' })
+    @ApiBody({ type: VerifyOtpDto })
+    @createApiResponse(201, 'otp verified', true, {})
+    @createApiResponse(400, 'invalid otp', false)
+    @createApiResponse(404, USER_NOT_FOUND, false, { error: 'not found' })
+    async verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
         const emailCheck = await this.userService.findOneEmail(verifyOtpDto.email);
         if (!emailCheck) {
-          throw new NotFoundException(USER_NOT_FOUND);
+            throw new NotFoundException(USER_NOT_FOUND);
         }
         return await this.otpService.validOtp(emailCheck._id, verifyOtpDto.otp);
-      }
+    }
+
+    @Get('batches')
+    getBatches() {
+        return this.academicService.getAllBatches();
+    }
+
+    @Get('departments')
+    getDepartments() {
+        return this.academicService.getAllDepartments();
+    }
+
+    @Get('sections')
+    getSections() {
+        return this.academicService.getAllSections();
+    }
+
+    @Get('semesters')
+    getSemesters() {
+        return this.academicService.getAllSemesters();
+    }
+
+
+    @Get('all')
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get all users for admin with pagination and filters' })
+    @ApiQuery({
+        name: 'page',
+        required: false,
+        type: Number,
+        description: 'Page number for pagination',
+    })
+    @ApiQuery({
+        name: 'limit',
+        required: false,
+        type: Number,
+        description: 'Number of items per page',
+    })
+    @ApiQuery({
+        name: 'type',
+        required: false,
+        type: String,
+        description: 'type',
+    })
+    @ApiQuery({
+        name: 'status',
+        required: false,
+        type: String,
+        description: 'Filter users by status (active, inactive, blocked)',
+    })
+    @ApiQuery({
+        name: 'search',
+        required: false,
+        type: String,
+        description: 'Search by name or email',
+    })
+    @ApiResponse({ status: 200, description: 'List of users returned successfully' })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    async getAllUsersAdmin(
+        @Query('status') status?: string,
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('search') search?: string,
+        @Query('type') type?: string,
+    ) {
+        return await this.userService.getAllUsersAdmin(
+            status,
+            page,
+            limit,
+            search,
+            type
+        );
+    }
+
+
+    @Put('status-update/:id')
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Approve a pending user' })
+    @ApiResponse({ status: 200, description: 'User approved successfully' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    async approveUser(
+        @Param('id') id: string,
+        @Body() dto: UpdateUserStatusDto
+    ) {
+        return this.userService.updateStatus(id, dto);
+    }
+
 
 }

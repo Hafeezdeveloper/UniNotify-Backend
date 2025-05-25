@@ -3,19 +3,20 @@ import { User, UserDocument } from './schema/user.schema';
 import mongoose, { Model, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { LoginDto, RegisterUserDto } from './dto/create-user.dto';
-import { ADMIN, emailSub, emailTemplates, STUDENT, TEACHER } from 'src/libaray/constants/app.constants';
+import { ADMIN, emailSub, emailTemplates, FACULTY, STUDENT, TEACHER } from 'src/libaray/constants/app.constants';
 import { capitalizeFirstLetter, failureHandler, Pagination, paginationParams, successHandler, toCamelCase } from 'src/libaray/helpers/utility.helpers';
 import { AuthService } from 'src/auth/auth.service';
 import { OtpService } from 'src/otp/otp.service';
 import { logger } from 'src/lib/helpers/utility.logger';
 import { Response } from 'express';
 import { getDocumentTotal } from 'src/lib/helpers/utility.helpers';
-import { ACTIVE, AWAY, LINK, RESET, StatusEnum, USER_NOT_FOUND } from 'src/lib/constants/app.constants';
+import { ACTIVE, AWAY, LINK, PENDING, RESET, StatusEnum, USER_NOT_FOUND } from 'src/lib/constants/app.constants';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
 import * as bcrypt from 'bcrypt';
 import { decode } from 'punycode';
 import * as dotenv from 'dotenv';
+import { UpdateUserStatusDto } from './dto/update-status.dto';
 
 dotenv.config();
 
@@ -34,17 +35,16 @@ export class UserService {
         const session = await this.connection.startSession();
         session.startTransaction();
         try {
-            console.log("registerUserDto", registerUserDto)
             // Correcting the collections object
             const collections = {
                 [STUDENT]: this.userModel,
                 [TEACHER]: this.userModel,
+                [FACULTY]: this.userModel,
                 // [ADMIN]: this.,
             };
 
-            const newUser = new this.userModel(registerUserDto);
+            const newUser = new this.userModel({ ...registerUserDto, });
             await newUser.save({ session });
-            console.log(newUser)
 
             // const sub_collection = { _id: newUser._id };
 
@@ -94,12 +94,7 @@ export class UserService {
                 throw new BadRequestException('Invalid Token');
             }
 
-            if (
-                await this.otpService.verifyOtp(
-                    new Types.ObjectId(decoded.userId),
-                    decoded.otp,
-                )
-            ) {
+            if (await this.otpService.verifyOtp(new Types.ObjectId(decoded.userId), decoded.otp,)) {
                 const updatedUser = await this.userModel.findByIdAndUpdate(
                     new Types.ObjectId(decoded.userId),
                     { $set: { isVerified: true, adminNotified: false } },
@@ -135,6 +130,8 @@ export class UserService {
     }
 
     async login(logindto: LoginDto) {
+        console.log("Awdawd")
+        console.log("lerar", logindto)
         const userDetailsCheck = await this.findOneEmailDetails(logindto.email);
         if (!userDetailsCheck) {
             return failureHandler(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
@@ -344,22 +341,19 @@ export class UserService {
                 expiresIn: expiresIn,
                 mobileSession: logindto.fcmToken ? true : false,
             });
-           
-            //   const userDetails = {
-            //     fullName: userDetailsCheck.fullName,
-            //     profileImageUrl: userDetailsCheck.profileImageUrl,
-            //     coverImageUrl: userDetailsCheck.coverImageUrl,
-            //     status: userDetailsCheck.status,
-            //     roleCategory: userDetailsCheck.roleCategory,
-            //     isVerified: userDetailsCheck.isVerified,
-            //     totalRatings: userDetailsCheck.totalRatings,
-            //     totalReviews: userDetailsCheck.totalReviews,
-            //   };
+
+            const userDetails = {
+                fullName: userDetailsCheck.fullName,
+                profileImageUrl: userDetailsCheck.profileImageUrl,
+                status: userDetailsCheck.status,
+                role: userDetailsCheck.role,
+                isVerified: userDetailsCheck.isVerified,
+            };
 
             await session.commitTransaction();
             session.endSession();
 
-            return successHandler('Login success', { token, });
+            return successHandler('Login success', { token, userDetails });
         } catch (error) {
             await session.abortTransaction();
             session.endSession();
@@ -703,6 +697,24 @@ export class UserService {
         }
     }
 
+
+    async updateStatus(userId: string, dto: UpdateUserStatusDto) {
+        const user = await this.userModel.findByIdAndUpdate(
+            userId,
+            {
+                $set: { status: dto.status },
+            },
+            { new: true }
+        ).exec();
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Add any additional logic here (e.g., send email notification)
+        return successHandler('User approved sucessfully');
+    }
+
     // async resetPassword(_resetPasswordDto: ResetPasswordDto) {
     //     const userDetails = await this.findOneEmail(_resetPasswordDto.email);
     //     if (!userDetails) {
@@ -989,6 +1001,77 @@ export class UserService {
             .lean();
 
         return successHandler('image updated successfully', { [field]: imagePath });
+    }
+
+    async getAllUsersAdmin(
+        status?: string,
+        page?: number,
+        limit?: number,
+        search?: string,
+        type?:string
+    ) {
+        try {
+            const { currentPage, pageSize, skip } = paginationParams(page, limit);
+            const matchConditions: any = {
+                isVerified: true
+            };
+            console.log(status)
+            if (status) {
+                matchConditions.status = status;
+            }
+            if (type) {
+                matchConditions.role = type;
+            }
+            if (search) {
+                matchConditions.$or = [
+                    { firstName: { $regex: search, $options: 'i' } },
+                    { lastName: { $regex: search, $options: 'i' } },
+                ];
+            }
+
+            const pipeline: any[] = [
+                {
+                    $match: matchConditions
+                },
+                {
+                    $lookup: {
+                        from: "departments",
+                        localField: "department",
+                        foreignField: "_id",
+                        as: "departmentDetails"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$departmentDetails",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $sort: {
+                        createdAt: -1
+                    }
+                },
+                {
+                    $facet: {
+                        documents: [{ $skip: skip }, { $limit: Number(pageSize) }],
+                        totalCount: [{ $count: 'value' }],
+                    },
+                },
+            ];
+            const [result] = await this.userModel.aggregate(pipeline).exec();
+            const { documents, totalCount } = result;
+            const totalItems = getDocumentTotal(totalCount);
+            const paginated = Pagination({
+                totalItems,
+                page: currentPage,
+                limit: pageSize,
+            });
+
+            return successHandler('success', { documents, paginated });
+        } catch (error) {
+            throw error
+        }
     }
 
     // async profileCompletion(userId: string, role: string) {

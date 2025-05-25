@@ -36,9 +36,10 @@ export const { FEMALE, MALE, OTHER } = genderEnum;
 export enum roleEnum {
     STUDENT = 'student', ///
     TEACHER = 'teacher', ///
+    FACULTY = 'faculty', ///
     ADMIN = 'admin', ///
 }
-export const { STUDENT, TEACHER, ADMIN } = roleEnum
+export const { STUDENT,FACULTY , TEACHER, ADMIN } = roleEnum
 
 export enum UserStatusEnum {
     ACTIVE = 'active',

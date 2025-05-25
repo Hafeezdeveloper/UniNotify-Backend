@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { genderEnum, roleEnum, UserStatusEnum } from 'src/libaray/constants/app.constants';
+import { DEFAULT_PROFILE_IMAGE_PATH } from 'src/lib/constants/app.constants';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -13,7 +14,7 @@ export class User {
   @Prop()
   lastName: string;
 
-  @Prop({})
+  @Prop({ default: "" })
   fullName: string;
 
   @Prop({ required: true })
@@ -25,7 +26,7 @@ export class User {
   @Prop({ enum: roleEnum })
   role: string;
 
-  @Prop({  default: UserStatusEnum.PENDING })
+  @Prop({ default: UserStatusEnum.PENDING })
   status: string;
 
   @Prop({ required: true, default: false })
@@ -44,10 +45,20 @@ export class User {
   @Prop({})
   firebasetoken: string;
 
+  @Prop({ type: "ObjectId" })
+  department: Types.ObjectId;
 
+  @Prop({ type: "ObjectId" })
+  section: Types.ObjectId;
 
-  //   @Prop({default: DEFAULT_PROFILE_IMAGE_PATH})
-  //   profileImageUrl: string;
+  @Prop({ type: "ObjectId" })
+  semester: Types.ObjectId;
+
+  @Prop({ type: "ObjectId" })
+  batch: Types.ObjectId;
+
+  @Prop({ default: DEFAULT_PROFILE_IMAGE_PATH })
+  profileImageUrl: string;
 
   //   @Prop({default: DEFAULT_COVER_IMAGE_PATH})
   //   coverImageUrl: string;
@@ -134,7 +145,7 @@ UserSchema.pre<UserDocument>('save', async function (next) {
   try {
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
-    this.fullName = `${this.firstName} ${this.lastName}`;
+    this.fullName = `${this.fullName}`;
     next();
   } catch (error) {
     next(error);
@@ -161,10 +172,10 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
       next(error);
     }
   }
-  if (update.firstName || update.lastName) {
-    update.fullName = `${update.firstName} ${update.lastName}`;
-    this.setUpdate(update);
-    next();
-  }
+  // if (update.firstName || update.lastName) {
+  //   update.fullName = `${update.firstName} ${update.lastName}`;
+  //   this.setUpdate(update);
+  //   next();
+  // }
   next();
 });

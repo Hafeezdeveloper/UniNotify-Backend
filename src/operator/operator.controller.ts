@@ -86,7 +86,7 @@ export class OperatorController {
     const userNameCheck = await this.operatorService.findOneUserName(
       twoFactorDto.userName,
     );
-    if (!userNameCheck) {
+    if (!userNameCheck) { 
       throw new NotFoundException(USER_NOT_FOUND);
     }
     const isValidOtp = await this.otpService.verifyOtp(

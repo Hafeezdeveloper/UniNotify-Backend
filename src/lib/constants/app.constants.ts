@@ -55,6 +55,7 @@ export enum StatusEnum {
   DEACTIVATED = 'deactivated',
   DECLINED = 'declined',
   AWAY = 'away',
+  APPROVED= 'approved',
 }
 
 export const { ACTIVE, INACTIVE, PENDING, DEACTIVATED, DECLINED, AWAY } =

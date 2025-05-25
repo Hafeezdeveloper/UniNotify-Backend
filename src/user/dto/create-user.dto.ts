@@ -12,9 +12,11 @@ import {
   MaxLength,
   IsDateString,
   Matches,
+  IsMongoId,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { roleEnum, vMsg } from 'src/libaray/constants/app.constants';
+import { Types } from 'mongoose';
 
 export enum GenderEnum {
   FEMALE = 'female',
@@ -29,17 +31,16 @@ export class RegisterUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => value.toLowerCase())
-  firstName: string;
+  fullName: string;
 
-  @ApiPropertyOptional({
-    description: 'Last name of the user',
-    example: 'Doe',
-  })
-  @IsString()
-  @IsOptional()
-  @Transform(({ value }) => value.toLowerCase())
-  lastName: string;
+  // @ApiPropertyOptional({
+  //   description: 'Last name of the user',
+  //   example: 'Doe',
+  // })
+  // @IsString()
+  // @IsOptional()
+  // @Transform(({ value }) => value.toLowerCase())
+  // lastName: string;
 
   @ApiProperty({
     description: 'Email of the user',
@@ -52,12 +53,13 @@ export class RegisterUserDto {
 
 
   @ApiPropertyOptional({
-    description: 'australian bussiness number',
-    example: '7755-123-4211',
+    description: 'Department ID',
+    example: '665a41f6f1c2a70016f5f939',
   })
-  @IsString()
   @IsOptional()
-  roleNumber: string;
+  @IsMongoId()
+  department: Types.ObjectId;
+
 
 
   @ApiProperty({
@@ -78,6 +80,29 @@ export class RegisterUserDto {
   @IsNotEmpty({ message: vMsg.req })
   role: string;
 
+  @ApiPropertyOptional({
+    description: 'Section ID',
+    example: '665a4209f1c2a70016f5f93a',
+  })
+  @IsOptional()
+  @IsMongoId({ message: 'Invalid section ID' })
+  section: Types.ObjectId;
+
+  @ApiPropertyOptional({
+    description: 'Batch ID',
+    example: '665a4217f1c2a70016f5f93b',
+  })
+  @IsOptional()
+  @IsMongoId({ message: 'Invalid batch ID' })
+  batch: Types.ObjectId;
+
+  @ApiPropertyOptional({
+    description: 'Semester ID',
+    example: '665a4224f1c2a70016f5f93c',
+  })
+  @IsOptional()
+  @IsMongoId({ message: 'Invalid semester ID' })
+  semester: Types.ObjectId;
 }
 
 export class LoginDto {
@@ -87,7 +112,7 @@ export class LoginDto {
   })
   @IsEmail()
   @IsNotEmpty({ message: vMsg.req })
-  @Transform(({ value }) => value?.toLowerCase(), { toClassOnly: true })
+  // @Transform(({ value }) => value?.toLowerCase(), { toClassOnly: true })
   email: string;
 
   @ApiProperty({
